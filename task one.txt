@@ -1,0 +1,78 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+file_path = "C:/Users/user/.spyder-py3/Salaries.xlsx"
+df = pd.read_excel(file_path)
+
+num_rows, num_columns = df.shape
+data_types = df.dtypes
+missing_values = df.isnull().sum()
+
+mean_salary = df['TotalPayBenefits'].mean()
+median_salary = df['TotalPayBenefits'].median()
+mode_salary = df['TotalPayBenefits'].mode()[0]
+min_salary = df['TotalPayBenefits'].min()
+max_salary = df['TotalPayBenefits'].max()
+salary_range = max_salary - min_salary
+std_dev_salary = df['TotalPayBenefits'].std()
+
+df_cleaned = df.fillna(df.mean())
+
+plt.figure(figsize=(12, 6))
+plt.hist(df_cleaned['TotalPayBenefits'], bins=20, edgecolor='black', alpha=0.7)
+plt.title('Distribution of Salaries')
+plt.xlabel('Total Pay and Benefits')
+plt.ylabel('Frequency')
+plt.show()
+
+# Pie chart for department proportions
+department_proportions = df_cleaned['Department'].value_counts()
+plt.figure(figsize=(10, 10))
+plt.pie(department_proportions, labels=department_proportions.index, autopct='%1.1f%%', startangle=90)
+plt.title('Proportion of Employees in Different Departments')
+plt.show()
+
+# Grouped Analysis
+grouped_data = df_cleaned.groupby('Department')['TotalPayBenefits'].agg(['mean', 'count'])
+print(grouped_data)
+
+# Simple Correlation Analysis
+correlation_column = 'AnotherNumericColumn'
+correlation = df_cleaned['TotalPayBenefits'].corr(df_cleaned[correlation_column])
+
+# Scatter plot
+plt.figure(figsize=(10, 6))
+plt.scatter(df_cleaned['TotalPayBenefits'], df_cleaned[correlation_column])
+plt.title(f'Scatter Plot: Salary vs {correlation_column}')
+plt.xlabel('Total Pay and Benefits')
+plt.ylabel(correlation_column)
+plt.show()
+
+# Summary Report
+summary_report = f"""
+Basic Data Exploration:
+- Number of Rows: {num_rows}
+- Number of Columns: {num_columns}
+- Data Types: {data_types}
+- Missing Values: {missing_values}
+
+Descriptive Statistics:
+- Mean Salary: {mean_salary}
+- Median Salary: {median_salary}
+- Mode Salary: {mode_salary}
+- Minimum Salary: {min_salary}
+- Maximum Salary: {max_salary}
+- Salary Range: {salary_range}
+- Standard Deviation of Salaries: {std_dev_salary}
+
+Data Cleaning:
+- Filled missing values with the mean of each column.
+
+Grouped Analysis:
+{grouped_data}
+
+Simple Correlation Analysis:
+- Correlation between Salary and {correlation_column}: {correlation}
+"""
+
+print(summary_report)
